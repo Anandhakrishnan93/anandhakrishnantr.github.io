@@ -3,106 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frequency Array Visualization</title>
+    <title>DSA Logic Visualizer | Maximum Number</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f8fafc;
-            --primary: #10b981;
-            --text: #0f172a;
             --card: #ffffff;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
             --border: #e2e8f0;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
-            color: var(--text);
+            color: var(--text-main);
+            margin: 0;
             display: flex;
             justify-content: center;
             padding: 40px 20px;
         }
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
+        .container { max-width: 900px; width: 100%; }
 
         .card {
             background: var(--card);
-            border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
         }
 
-        h2 { font-weight: 800; margin-bottom: 20px; text-align: center; color: var(--primary); }
+        .header { text-align: center; margin-bottom: 32px; }
+        h1 { font-size: 2rem; font-weight: 800; color: var(--primary-dark); margin: 0; }
+        p { color: var(--text-muted); margin-top: 8px; }
 
-        .input-section {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
+        .input-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
         }
 
-        .input-section span {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            background: #f1f5f9;
-            padding: 10px 20px;
+        input {
+            padding: 12px 20px;
             border-radius: 12px;
+            border: 2px solid var(--border);
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.2s;
         }
 
-        /* The Frequency Grid */
+        input:focus { border-color: var(--primary); }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: var(--primary-dark); }
+
+        /* Frequency Array Grid */
+        .grid-title { font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         .grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin-bottom: 40px;
         }
 
         .bucket {
             border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 15px;
+            border-radius: 12px;
+            padding: 12px 4px;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .bucket.active {
             border-color: var(--primary);
             background: #ecfdf5;
+            transform: scale(1.05);
         }
 
-        .bucket-label {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 5px;
-            display: block;
-        }
+        .b-index { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .b-count { font-size: 1.4rem; font-weight: 700; }
 
-        .bucket-count {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logic-box {
+        /* Step explanation */
+        .step-box {
             background: #0f172a;
             color: #f1f5f9;
-            padding: 20px;
+            padding: 24px;
             border-radius: 16px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            min-height: 100px;
         }
 
-        .highlight { color: #34d399; font-weight: bold; }
+        .highlight { color: var(--primary); font-weight: bold; }
 
-        @media (max-width: 500px) {
-            .grid { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: repeat(5, 1fr); }
         }
     </style>
 </head>
@@ -110,38 +121,100 @@
 
 <div class="container">
     <div class="card">
-        <h2>Logic Visualizer</h2>
-        
-        <div class="input-section">
-            <p style="color: #64748b; margin-bottom: 10px;">Input Number</p>
-            <span>3 8 2 9 3 3 6 7</span>
+        <div class="header">
+            <h1>Algorithm Visualizer</h1>
+            <p>Maximum Number from Digit Set (Frequency Array Logic)</p>
         </div>
 
-        <p style="font-weight: 600; margin-bottom: 15px;">Step 1: Hashed Array (The Tally)</p>
-        <div class="grid">
-            <div class="bucket"><span class="bucket-label">Digit 0</span><div class="bucket-count">0</div></div>
-            <div class="bucket"><span class="bucket-label">Digit 1</span><div class="bucket-count">0</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 2</span><div class="bucket-count">1</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 3</span><div class="bucket-count">3</div></div>
-            <div class="bucket"><span class="bucket-label">Digit 4</span><div class="bucket-count">0</div></div>
-            <div class="bucket"><span class="bucket-label">Digit 5</span><div class="bucket-count">0</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 6</span><div class="bucket-count">1</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 7</span><div class="bucket-count">1</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 8</span><div class="bucket-count">1</div></div>
-            <div class="bucket active"><span class="bucket-label">Digit 9</span><div class="bucket-count">1</div></div>
+        <div class="input-group">
+            <input type="number" id="numInput" value="38293367" placeholder="Enter number...">
+            <button onclick="runVisualization()">Visualize Logic</button>
         </div>
 
-        <p style="font-weight: 600; margin-bottom: 15px;">Step 2: Reconstructing Result</p>
-        <div class="logic-box">
-            // Starting from digit 0 up to 9:<br>
-            ...<br>
-            If digit is <span class="highlight">8</span>: result = result + (8 * 10^7)<br>
-            If digit is <span class="highlight">9</span>: result = result + (9 * 10^8)<br>
-            <hr style="border: 0; border-top: 1px solid #334155; margin: 10px 0;">
-            Final Maximum: <span class="highlight" style="font-size: 1.2rem;">98763332</span>
+        <div class="grid-title">
+            <span>Step 1: The Hashed Array (Tallying)</span>
+        </div>
+        <div class="grid" id="bucketGrid">
+            </div>
+
+        <div class="grid-title">Step 2: Reconstruction Logic</div>
+        <div class="step-box" id="outputLogic">
+            // Click "Visualize" to see the reconstruction process...
         </div>
     </div>
 </div>
+
+<script>
+    // Initialize empty grid
+    function initGrid() {
+        const grid = document.getElementById('bucketGrid');
+        grid.innerHTML = '';
+        for (let i = 0; i < 10; i++) {
+            grid.innerHTML += `
+                <div class="bucket" id="bucket-${i}">
+                    <span class="b-index">Digit ${i}</span>
+                    <div class="b-count" id="count-${i}">0</div>
+                </div>
+            `;
+        }
+    }
+
+    async function runVisualization() {
+        const val = document.getElementById('numInput').value;
+        if (!val) return;
+
+        initGrid();
+        const counts = Array(10).fill(0);
+        const output = document.getElementById('outputLogic');
+        output.innerHTML = "// Parsing string and filling buckets...<br>";
+
+        // Step 1: Fill Buckets
+        for (let char of val) {
+            const digit = parseInt(char);
+            if (!isNaN(digit)) {
+                counts[digit]++;
+                const b = document.getElementById(`bucket-${digit}`);
+                const c = document.getElementById(`count-${digit}`);
+                
+                b.classList.add('active');
+                c.innerText = counts[digit];
+                await new Promise(r => setTimeout(r, 300));
+                b.classList.remove('active');
+            }
+        }
+
+        output.innerHTML += "// Buckets filled. Now reconstructing maximum value...<br>";
+        await new Promise(r => setTimeout(r, 800));
+
+        // Step 2: Reconstruct
+        let result = 0;
+        let multiplier = 1;
+        let reconstructionSteps = [];
+
+        for (let i = 0; i < 10; i++) {
+            if (counts[i] > 0) {
+                document.getElementById(`bucket-${i}`).classList.add('active');
+                while (counts[i] > 0) {
+                    let term = i * multiplier;
+                    result += term;
+                    reconstructionSteps.push(`Adding <span class="highlight">${i}</span> at multiplier ${multiplier.toLocaleString()}`);
+                    output.innerHTML = reconstructionSteps.slice(-3).join('<br>') + `<br><br>Current Sum: <span class="highlight">${result}</span>`;
+                    
+                    counts[i]--;
+                    document.getElementById(`count-${i}`).innerText = counts[i];
+                    multiplier *= 10;
+                    await new Promise(r => setTimeout(r, 400));
+                }
+                document.getElementById(`bucket-${i}`).classList.remove('active');
+            }
+        }
+
+        output.innerHTML = `Final Result: <span class="highlight" style="font-size: 1.5rem;">${result}</span><br>Logic: Smaller digits were placed at lower place values (right), pushing larger digits to the left.`;
+    }
+
+    // Run on load
+    initGrid();
+</script>
 
 </body>
 </html>
